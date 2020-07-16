@@ -8,19 +8,22 @@ namespace WSXFileMiner
     enum AnalizeMode
     {
         Normal,
-        Deep
+        Deep,
     }
 
 
-    class FileManager
+    static class FileManager
     {
-        public FileManager()
-        {
-            streamWriter = File.AppendText("log.txt");
-        }
+        //TODO: Integrate ExtractFiles() into AnalizeFile() Passing a 3rd parameter in bool extract to reuse code and not to have things double.
 
-        public void AnalizeFile(string wsxFile, AnalizeMode analizeMode)
+        public static void AnalizeFile(string wsxFile, AnalizeMode analizeMode)
         {
+            if (!File.Exists(wsxFile))
+            {
+                Logger.Log("Error: File not found");
+                return;
+            }
+
             m_filePath = wsxFile;
             m_fileName = Path.GetFileName(wsxFile);
             Logger.Log("Analizing: " + m_filePath);
@@ -43,8 +46,13 @@ namespace WSXFileMiner
             }
         }
 
-        public void ExtractFiles(string wsxFile)
+        public static void ExtractFiles(string wsxFile)
         {
+            if (!File.Exists(wsxFile))
+            {
+                Logger.Log("Error: File not found");
+                return;
+            }
             m_filePath = wsxFile;
             m_fileName = Path.GetFileName(wsxFile);
             m_filePathFolder = Path.GetDirectoryName(wsxFile);
@@ -67,22 +75,22 @@ namespace WSXFileMiner
             Logger.Log("Done!");
         }
 
-        public void PrintFileStats()
+        public static void PrintFileStats()
         {
             Logger.Log("FileName: " + m_fileName);
             Logger.Log("Files inside WSX: " + m_numberOfFiles);
         }
 
-        public void Log(string line)
+        public static void Log(string line)
         {
             streamWriter.WriteLine(line);
         }
 
         // Single File
-        string m_filePath;
-        string m_fileName;
-        string m_filePathFolder;
-        StreamWriter streamWriter;
-        Int16 m_numberOfFiles;
+        static string m_filePath;
+        static string m_fileName;
+        static string m_filePathFolder;
+        static StreamWriter streamWriter = File.AppendText("log.txt");
+        static Int16 m_numberOfFiles;
     }
 }

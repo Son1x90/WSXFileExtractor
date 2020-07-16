@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Numerics;
 using System.Runtime.InteropServices;
 
 namespace WSXFileMiner
@@ -14,7 +15,6 @@ namespace WSXFileMiner
                 Console.WriteLine(str);
                 streamWriter.WriteLine(str);
             }
-
         }
     }
 
@@ -25,37 +25,33 @@ namespace WSXFileMiner
         static void Main(string[] args)
         {
             //Import File Recognition
-
-            Logger.Log("Welcome to the WSX File Miner");
+            Logger.Log("Welcome to the WSX File Miner/Extractor");
             Logger.Log("Drag and drop the file(s) onto the exe.");
             Logger.Log("--------------------------------------------------------------");
             Logger.Log(DateTime.Now.ToString());
 
-            if (!DEBUGMODE)
-            {
-                if (args.Length > 0)
-                {
-                    FileManager fileManager = new FileManager();
 
-                    for (int i = 0; i < args.Length; i++)
-                    {
-                        fileManager.AnalizeFile(args[i], AnalizeMode.Deep);
-                        //fileManager.ExtractFiles(args[i]);
-                    }
-                }
-                Logger.Log("Done! Press Enter to exit...");
-                Console.ReadLine();
-            }
-            else
+            if (args.Length > 0)
             {
-                //D:\Games\LandsOfLoreDataMining\LOL3DVD\MUSIC1.WSX
-                string filePath;
-                filePath = Console.ReadLine();
-                FileManager fileManager = new FileManager();
-                fileManager.AnalizeFile(filePath, AnalizeMode.Deep);
-                //fileManager.ExtractFiles(filePath);
+                //FileManager fileManager = new FileManager();
+
+                for (int i = 0; i < args.Length; i++)
+                {
+                    FileManager.AnalizeFile(args[i], AnalizeMode.Deep);
+                    FileManager.ExtractFiles(args[i]);
+                }
             }
+
+            string filePath = null;
+            do
+            {
+                Logger.Log("Provide the File Path or type exit/quit to exit");
+                //D:\Games\LandsOfLoreDataMining\LOL3DVD\MUSIC1.WSX
+                filePath = Console.ReadLine();
+                //FileManager fileManager = new FileManager();
+                FileManager.AnalizeFile(filePath, AnalizeMode.Deep);
+                FileManager.ExtractFiles(filePath);
+            } while (filePath != "exit" && filePath != "quit");
         }
-        static bool DEBUGMODE = true;
     }
 }
