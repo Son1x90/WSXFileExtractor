@@ -13,7 +13,7 @@ Please use the following prefixes to comment lines when submitting files to vers
 
 !D Delete files from repository
 
-!B Bugfix - must include the JIRA ID like so: "(CE-1234)".
+!B Bugfix
 
 !F New feature has been implemented
 
@@ -25,7 +25,7 @@ Please use the following prefixes to comment lines when submitting files to vers
 
 !I Integration of files from/to a branch
 
-!E This change is from an external contributor, for example “!E David Kaye.”
+!E This change is from an external contributor, for example “!E MR Mustermann.”
 
 !X Excluded from Release notes 
 
