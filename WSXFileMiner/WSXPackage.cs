@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using FileSignatures;
 
 namespace WSXFileMiner
 {
@@ -9,9 +10,12 @@ namespace WSXFileMiner
         public WSXPackage(string filePath)
         {
             m_files = new List<FileInfo>();
+            var inspector = new FileFormatInspector();
 
             using (BinaryReader binaryReader = new BinaryReader(File.Open(filePath, FileMode.Open)))
             {
+                m_fileName = Path.GetFileName(filePath);
+                m_filePathFolder = Path.GetDirectoryName(filePath);
                 m_filesInsidePackage = binaryReader.ReadInt16();
                 m_packageFileSize = binaryReader.ReadInt32();
 
@@ -22,7 +26,7 @@ namespace WSXFileMiner
                     fileInfo.fileAdressAfterPackageInfo = binaryReader.ReadUInt32();
                     fileInfo.fileSize = binaryReader.ReadUInt32();
                     fileInfo.fileData = new byte[fileInfo.fileSize];
-                    fileInfo.fileExtension = "";
+                    fileInfo.fileExtension = FileExtensionInspector.GetExtension(binaryReader.BaseStream, 6 /* 2bytes m_filesInsidePackage + 4 unknown */ + (m_filesInsidePackage * 12 /*one file info */) + fileInfo.fileAdressAfterPackageInfo);
                     m_files.Add(fileInfo);
                 }
                 m_dataStart = binaryReader.BaseStream.Position;
@@ -41,16 +45,16 @@ namespace WSXFileMiner
             }
         }
 
-        public void PrintFileInformation()
+        public void PrintSubFileInformation()
         {
             for (int i = 0; i < m_files.Count; i++)
             {
-                PrintFileInformation(m_files[i]);
+                PrintSubFileInformation(m_files[i]);
             }
 
         }
 
-        public void PrintFileInformation(FileInfo fileInfo)
+        public void PrintSubFileInformation(FileInfo fileInfo)
         {
             string UnknownFileData1Binary = Convert.ToString(fileInfo.unknownFileData1, 2);
             string UnknownFileData1Hex = Convert.ToString(fileInfo.unknownFileData1, 16);
@@ -62,6 +66,7 @@ namespace WSXFileMiner
 
             Logger.Log("FileAddressOffsetAfterPackageData: " + fileInfo.fileAdressAfterPackageInfo);
             Logger.Log("FileSize: " + fileInfo.fileSize);
+            Logger.Log("FileExtension: " + fileInfo.fileExtension);
         }
 
         public void PrintPackageInformation()
@@ -72,6 +77,8 @@ namespace WSXFileMiner
             Logger.Log("PackageInfoSize: " + m_packageInfoSize);
         }
 
+        public string m_fileName;
+        public string m_filePathFolder;
         public short m_filesInsidePackage;
         public int m_packageFileSize;
         public List<FileInfo> m_files;

@@ -26,19 +26,16 @@ namespace WSXFileMiner
         {
             //Import File Recognition
             Logger.Log("Welcome to the WSX File Miner/Extractor");
-            Logger.Log("Drag and drop the file(s) onto the exe.");
+            Logger.Log("Drag and drop the file(s) onto the exe or a single file into the console");
             Logger.Log("--------------------------------------------------------------");
             Logger.Log(DateTime.Now.ToString());
 
 
             if (args.Length > 0)
             {
-                //FileManager fileManager = new FileManager();
-
                 for (int i = 0; i < args.Length; i++)
                 {
-                    FileManager.AnalizeFile(args[i], AnalizeMode.Deep);
-                    FileManager.ExtractFiles(args[i]);
+                    FileManager.ProcessFile(args[i], InfoDisplayMode.PackageDataAndFileData, true);
                 }
             }
 
@@ -46,11 +43,8 @@ namespace WSXFileMiner
             do
             {
                 Logger.Log("Provide the File Path or type exit/quit to exit");
-                //D:\Games\LandsOfLoreDataMining\LOL3DVD\MUSIC1.WSX
                 filePath = Console.ReadLine();
-                //FileManager fileManager = new FileManager();
-                FileManager.AnalizeFile(filePath, AnalizeMode.Deep);
-                FileManager.ExtractFiles(filePath);
+                FileManager.ProcessFile(filePath, InfoDisplayMode.PackageDataAndFileData, true);
             } while (filePath != "exit" && filePath != "quit");
         }
     }
