@@ -5,7 +5,6 @@ using System.Runtime.InteropServices;
 
 namespace WSXFileMiner
 {
-
     public class Logger
     {
         public static void Log(string str)
@@ -25,10 +24,12 @@ namespace WSXFileMiner
         static void Main(string[] args)
         {
             //Import File Recognition
-            Logger.Log("Welcome to the WSX File Miner/Extractor");
+            Logger.Log("Welcome to the WSX File Miner/Extractor v" + Settings.SSettings.GetVersion());
             Logger.Log("Drag and drop the file(s) onto the exe or a single file into the console");
             Logger.Log("--------------------------------------------------------------");
             Logger.Log(DateTime.Now.ToString());
+
+            Settings.GetOrCreateSettings(); // Injitializes the Settings
 
 
             if (args.Length > 0)

@@ -16,7 +16,10 @@ namespace WSXFileMiner
     static class FileManager
     {
 
+
         /*
+         * Old functions Replaced by ProcessFile(string wsxFile, InfoDisplayMode infoDisplayMode, bool extract)
+         * More convenient then Analize the File and then Extract which was not reusing code and doing everything twice.
         public static void AnalizeFile(string wsxFile, AnalizeMode analizeMode)
         {
             if (!File.Exists(wsxFile))
@@ -75,7 +78,6 @@ namespace WSXFileMiner
         }
          */
 
-        // Done TODO: Integrate ExtractFiles() into AnalizeFile() Passing a 3rd parameter in bool extract to reuse code and not to have things double.
         public static void ProcessFile(string wsxFile, InfoDisplayMode infoDisplayMode, bool extract)
         {
             if (!File.Exists(wsxFile))
@@ -112,7 +114,7 @@ namespace WSXFileMiner
                 string fileName;
                 for (int i = 0; i < wsxPackage.m_files.Count; i++)
                 {
-                    fileName = "ExtractedFile" + (i + 1); // so first file is File1
+                    fileName = "ExtractedFile" + (i + 1); // TODO: Find out the real File name. (probably UnknownFileData is pointing to a location where the stringName is)
                     using (BinaryWriter binaryWriter = new BinaryWriter(File.Open(newDirectory + "\\" + fileName + wsxPackage.m_files[i].fileExtension, FileMode.Create)))
                     {
                         Logger.Log("Extracting File" + i);

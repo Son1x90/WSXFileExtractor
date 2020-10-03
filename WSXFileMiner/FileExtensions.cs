@@ -15,9 +15,7 @@ namespace WSXFileMiner
 
         public string extension;
         public List<byte> signature;
-        //int schrott;
     }
-
 
     static class FileExtensionInspector
     {
@@ -36,10 +34,6 @@ namespace WSXFileMiner
                 //loop through all FileExtension Signature bytes
                 for (int j = 0; j < m_fileExtension[i].signature.Count; j++)
                 {
-                    //Temp
-                    var test1 = m_fileExtension[i].signature[j];
-                    var test2 = m_SignatureBuffer[j];
-
                     //do the bytes match?
                     if (m_fileExtension[i].signature[j] != m_SignatureBuffer[j])
                     {
@@ -51,7 +45,6 @@ namespace WSXFileMiner
                     {
                         matches++;
                         matchedExtensions += "." + m_fileExtension[i].extension;
-                        //return m_fileExtension[i].extension;
                     }
                 }
             }
@@ -61,9 +54,15 @@ namespace WSXFileMiner
                 return matchedExtensions;
         }
 
+        //How many bytes to compare maximum
+        static public byte[] m_SignatureBuffer = new byte[20];
+
+        /* Credits: Thanks to Gary Kessler for the collection of File Signatures which I have
+         * Converted from https://www.garykessler.net/library/file_sigs.html -> "My software utility" https://www.garykessler.net/software/index.html#filesigs 
+         * -> inside FileSigs (04/24/2020) https://www.garykessler.net/software/FileSigs_20200424.zip ->  FileSigs_20200424.zip\FileSigs_20200424\FileSigs_20200424\customsigs_GCK.txt
+         * into what you see below.
+         */
         static public FileExtension[] m_fileExtension = new FileExtension[]{
-            //new FileExtension ("tif", new List<byte> {0x4D,0x4D,0x00,0x2A}),
-            //new FileExtension ("wav", new List<byte> {0x52,0x49,0x46,0x46}),
             new FileExtension ("jp2", new List<byte> {0x00,0x00,0x00,0x0C,0x6A,0x50,0x20,0x20}),
             new FileExtension ("3gp", new List<byte> {0x00,0x00,0x00,0x14,0x66,0x74,0x79,0x70}),
             new FileExtension ("mp4", new List<byte> {0x00,0x00,0x00,0x14,0x66,0x74,0x79,0x70,0x69,0x73,0x6F,0x6D}),
@@ -600,12 +599,5 @@ namespace WSXFileMiner
             new FileExtension ("mof", new List<byte> {0xFF,0xFE,0x23,0x00,0x6C,0x00,0x69,0x00}),
             new FileExtension ("sys", new List<byte> {0xFF,0xFF,0xFF,0xFF})
         };
-
-        //How many bytes to compare maximum
-        static public byte[] m_SignatureBuffer = new byte[20];
     }
 }
-
-
-
-//

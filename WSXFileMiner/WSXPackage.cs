@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using FileSignatures;
 
 namespace WSXFileMiner
 {
@@ -10,7 +9,6 @@ namespace WSXFileMiner
         public WSXPackage(string filePath)
         {
             m_files = new List<FileInfo>();
-            var inspector = new FileFormatInspector();
 
             using (BinaryReader binaryReader = new BinaryReader(File.Open(filePath, FileMode.Open)))
             {
@@ -18,6 +16,7 @@ namespace WSXFileMiner
                 m_filePathFolder = Path.GetDirectoryName(filePath);
                 m_filesInsidePackage = binaryReader.ReadInt16();
                 m_packageFileSize = binaryReader.ReadInt32();
+                m_sSettings = Settings.GetOrCreateSettings();
 
                 for (int i = 0; i < m_filesInsidePackage; i++)
                 {
@@ -26,7 +25,10 @@ namespace WSXFileMiner
                     fileInfo.fileAdressAfterPackageInfo = binaryReader.ReadUInt32();
                     fileInfo.fileSize = binaryReader.ReadUInt32();
                     fileInfo.fileData = new byte[fileInfo.fileSize];
-                    fileInfo.fileExtension = FileExtensionInspector.GetExtension(binaryReader.BaseStream, 6 /* 2bytes m_filesInsidePackage + 4 unknown */ + (m_filesInsidePackage * 12 /*one file info */) + fileInfo.fileAdressAfterPackageInfo);
+                    if (m_sSettings.AddFileExtension)
+                        fileInfo.fileExtension = FileExtensionInspector.GetExtension(binaryReader.BaseStream, 6 /* 2bytes m_filesInsidePackage + 4 unknown */ + (m_filesInsidePackage * 12 /*one file info */) + fileInfo.fileAdressAfterPackageInfo);
+                    else
+                        fileInfo.fileExtension = "";
                     m_files.Add(fileInfo);
                 }
                 m_dataStart = binaryReader.BaseStream.Position;
@@ -37,7 +39,6 @@ namespace WSXFileMiner
             for (int i = 0; i < m_filesInsidePackage; i++)
             {
                 FileInfo fileInfo = m_files[i];
-                //StreamReader streamReader = new StreamReader(filePath);
                 BinaryReader binaryReader = new BinaryReader(File.Open(filePath, FileMode.Open));
                 binaryReader.BaseStream.Position = m_dataStart + fileInfo.fileAdressAfterPackageInfo;
                 binaryReader.BaseStream.Read(fileInfo.fileData, 0, (int)fileInfo.fileSize);// ReadBlock(fileInfo.fileData);
@@ -61,9 +62,6 @@ namespace WSXFileMiner
             Logger.Log("UnknownFileData1: " + fileInfo.unknownFileData1);
             Logger.Log("UnknownFileData1Bin: " + UnknownFileData1Hex);
             Logger.Log("UnknownFileData1Hex: " + UnknownFileData1Binary);
-            if (UnknownFileData1Binary.Substring(0, 1) == "0")
-                Logger.Log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-
             Logger.Log("FileAddressOffsetAfterPackageData: " + fileInfo.fileAdressAfterPackageInfo);
             Logger.Log("FileSize: " + fileInfo.fileSize);
             Logger.Log("FileExtension: " + fileInfo.fileExtension);
@@ -84,6 +82,7 @@ namespace WSXFileMiner
         public List<FileInfo> m_files;
         public long m_dataStart;
         public long m_packageInfoSize;
+        Settings.SSettings m_sSettings;
     }
 
     public struct FileInfo
